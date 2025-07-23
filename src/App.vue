@@ -5,7 +5,7 @@ import { Button } from 'primevue';
 <template>
   <header>
     <Button>
-      
+      Verify
     </Button>
   </header>
 </template>
