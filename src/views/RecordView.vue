@@ -1,11 +1,9 @@
-<script lang="ts">
-import MainMenu from "../components/MainMenu.vue"
+<script setup lang="ts">
+import RecordTable from "../components/RecordTable.vue";
 </script>
 
 <template>
   <main>
-    <main-menu>
-
-    </main-menu>
+    <RecordTable></RecordTable>
   </main>
 </template>

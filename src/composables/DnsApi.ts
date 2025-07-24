@@ -1,5 +1,4 @@
 import axios, { type AxiosResponse } from "axios"
-import { hostname } from "os"
 
 type RecordType = "A" | "AAAA" | "CNAME" | "MX" | "NS" | "PTR" | "SOA" | "SRV" | "TXT"
 
