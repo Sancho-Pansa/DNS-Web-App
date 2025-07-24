@@ -26,6 +26,7 @@
     "@vitejs/plugin-vue": "^6.0.0",
     "@vue/test-utils": "^2.4.6",
     "@vue/tsconfig": "^0.7.0",
+    "axios": "^1.11.0",
     "jsdom": "^26.1.0",
     "npm-run-all2": "^8.0.4",
     "prettier": "3.5.3",
