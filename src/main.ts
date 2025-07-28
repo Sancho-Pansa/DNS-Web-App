@@ -9,7 +9,7 @@ import router from "./router"
 const app = createApp(App)
 
 app
-  .use(router)
+  //.use(router)
   .use(PrimeVue, {
     theme: {
       preset: Aura
