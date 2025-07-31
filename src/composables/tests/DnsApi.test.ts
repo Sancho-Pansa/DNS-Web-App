@@ -1,6 +1,6 @@
 import { describe, expect, test, vi } from "vitest"
 import useDnsApi from "../DnsApi"
-import axios, { type AxiosInstance } from "axios"
+import { type AxiosInstance } from "axios"
 
 vi.mock("axios", async () => {
   const mockGet = vi.fn().mockResolvedValue({
@@ -47,4 +47,10 @@ describe("Method /dns/list to PSU endpoint", () => {
     expect(record).toBeDefined()
     expect(record?.ipAddress).toStrictEqual("10.127.200.100")
   })
-})
+});
+
+describe("Method /dns/add-record to PSU Endpoint", () => {
+  test("Add A Record to DNS", async () => {
+    //const response
+  });
+});

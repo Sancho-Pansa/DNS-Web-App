@@ -22,7 +22,7 @@ export default function useDnsApi() {
     baseURL: API_ADDRESS
   })
 
-  const getRecords = async function (...recordTypes: RecordType[]) {
+  const getRecords = async function(...recordTypes: RecordType[]) {
     try {
       const response = await axiosInstance.get("/dns/list")
       const recordData: DnsRecord[] = (response.data as ReceivedRecord[]).map(
@@ -39,7 +39,7 @@ export default function useDnsApi() {
     }
   }
 
-  const addRecord = async function (hostname: string, ipAddress: string, addPtr: boolean = true) {
+  const addRecord = async function(hostname: string, ipAddress: string, addPtr: boolean = true) {
     try {
       axiosInstance.post("/dns/add-record", {
         Name: hostname,
