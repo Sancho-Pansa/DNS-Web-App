@@ -1,4 +1,4 @@
-import axios, { type AxiosResponse } from "axios"
+import axios, { AxiosError } from "axios"
 
 type RecordType = "A" | "AAAA" | "CNAME" | "MX" | "NS" | "PTR" | "SOA" | "SRV" | "TXT"
 
@@ -16,6 +16,8 @@ interface ReceivedRecord {
 export default function useDnsApi() {
   const API_ADDRESS: string = import.meta.env.VITE_API_BASE_URL
 
+  const HTTP_UNPROCESSABLE_CONTENT = 422
+
   const axiosInstance = axios.create({
     baseURL: API_ADDRESS
   })
@@ -32,12 +34,30 @@ export default function useDnsApi() {
       )
 
       return recordData.filter((r) => recordTypes.includes(r.type))
-    } catch (e) {
+    } catch (e: unknown) {
+      throw e
+    }
+  }
+
+  const addRecord = async function (hostname: string, ipAddress: string, addPtr: boolean = true) {
+    try {
+      axiosInstance.post("/dns/add-record", {
+        Name: hostname,
+        IpAddress: ipAddress,
+        addPtr
+      })
+    } catch (e: unknown) {
+      if (e instanceof AxiosError) {
+        if (e.status === HTTP_UNPROCESSABLE_CONTENT) {
+          throw new Error("Hostname already exists!")
+        }
+      }
       throw e
     }
   }
 
   return {
-    getRecords
+    getRecords,
+    addRecord
   }
 }
