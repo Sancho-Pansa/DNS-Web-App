@@ -5,6 +5,7 @@ import { zodResolver } from "@primevue/forms/resolvers/zod";
 import { z } from "zod";
 import { computed, ref } from "vue";
 import useDnsApi from "@/composables/DnsApi";
+import { AxiosError } from "axios";
 
 const initialValues = ref({
   hostname: "",
@@ -23,21 +24,39 @@ const resolver = ref(zodResolver(
     hostname: z.hostname({ error: "Not a valid hostname!" }),
     ipAddress: z.ipv4({ error: "Input is not the corrent IP Address!" })
   })
-))
+));
 
 const toast = useToast();
 
 const { addRecord } = useDnsApi();
 
-function onFormSubmit({ valid }: FormSubmitEvent) {
-  if(valid) {
+async function onFormSubmit(fse: FormSubmitEvent) {
+  if (fse.valid) {
+    try {
+      await addRecord(hostname.value, ipAddress.value, addPtr.value);
+    } catch (e: unknown) {
+      if (e instanceof AxiosError) {
+        generateErrorToast(`HTTP ${e.code}: ${e.message}`);
+      } else if(e instanceof Error) {
+        generateErrorToast(e.message);
+      } else {
+        generateErrorToast("Unknown error!");
+      }
+    }
     toast.add({
       severity: "success",
       summary: "Validation successful",
       life: 2000
     });
+    newRecordVisible.value = false;
   }
-  newRecordVisible.value = false;
+
+  function generateErrorToast(message: string): void {
+    toast.add({
+      severity: "error",
+      summary: message
+    });
+  }
 }
 </script>
 <template>
