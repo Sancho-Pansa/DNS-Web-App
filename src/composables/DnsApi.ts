@@ -56,7 +56,7 @@ export default function useDnsApi() {
     }
   };
 
-  function deleteRecord(hostname: string) {
+  const deleteRecord = async function(hostname: string) {
     try {
       axiosInstance.post("/dns/delete-record", {
         Name: hostname
@@ -67,7 +67,7 @@ export default function useDnsApi() {
       }
       throw e;
     }
-  }
+  };
 
   return {
     getRecords,

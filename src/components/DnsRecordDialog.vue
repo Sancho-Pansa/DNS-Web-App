@@ -16,13 +16,8 @@ const emit = defineEmits<{
   (event: "submit", payload: FormSubmitEvent<Record<string, unknown>>): void
 }>();
 
-const props = defineProps<{
-  header: string,
-  initialValues: {
-    hostname: string,
-    ipAddress: string,
-    addPtr: boolean
-  }
+defineProps<{
+  header: string
 }>();
 
 const resolver = ref(zodResolver(
@@ -35,12 +30,6 @@ const resolver = ref(zodResolver(
 function onSubmit(event: FormSubmitEvent<Record<string, unknown>>) {
   emit("submit", event);
 }
-
-function onShow() {
-  hostname.value = props.initialValues.hostname;
-  ipAddress.value = props.initialValues.ipAddress;
-  addPtr.value = true;
-}
 </script>
 
 <template>
@@ -48,20 +37,15 @@ function onShow() {
     v-model:visible="visible"
     :header="header"
     modal
-    class="w-1/3"
-    @show="onShow">
+    class="w-1/3">
     <Form
       v-slot="$form"
       :resolver="resolver"
-      :initial-values
+      validate-on-blur
       @submit="onSubmit"
       class="flex flex-col gap-4 w-full">
       <div class="flex items-center gap-4">
-        <label
-          for="hostname"
-          class="font-bold w-24 self-baseline">
-          Hostname
-        </label>
+        <label for="hostname" class="font-bold w-24 self-baseline">Hostname</label>
         <div class="flex flex-col flex-auto">
           <InputText
             v-model="hostname"

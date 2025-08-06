@@ -7,21 +7,29 @@ import useRecordStore from "@/composables/useRecordStore";
 import { AxiosError } from "axios";
 import DnsRecordDialog from "@/components/DnsRecordDialog.vue";
 
-const initialValues = ref({
+const DEFAULT_VALUES = {
   hostname: "",
   ipAddress: "",
   addPtr: true
-});
+};
 
 const newRecordVisible = ref(false);
 const editRecordVisible = ref(false);
+const deleteRecordVisible = ref(false);
 const hostname = ref("");
 const ipAddress = ref("");
 const addPtr = ref(true);
 
 const toast = useToast();
 
-const { addRecord } = useDnsApi();
+const { addRecord, deleteRecord } = useDnsApi();
+
+function onAddRecordClick() {
+  hostname.value = DEFAULT_VALUES.hostname;
+  ipAddress.value = DEFAULT_VALUES.ipAddress;
+  addPtr.value = DEFAULT_VALUES.addPtr;
+  newRecordVisible.value = true;
+}
 
 async function onAddSubmit(fse: FormSubmitEvent) {
   if (fse.valid) {
@@ -45,6 +53,8 @@ async function onAddSubmit(fse: FormSubmitEvent) {
       } else {
         generateErrorToast("Unknown error!");
       }
+    } finally {
+      refreshTable();
     }
     newRecordVisible.value = false;
   }
@@ -78,19 +88,58 @@ async function onEditSubmit(fse: FormSubmitEvent) {
         generateErrorToast(e.message);
       } else {
         generateErrorToast("Unknown error!");
+        deleteRecordVisible.value = false;
       }
+    } finally {
+      refreshTable();
     }
+    editRecordVisible.value = false;
   }
 }
 
 function onDeleteClick() {
+  deleteRecordVisible.value = true;
+  const { selectedRecord } = useRecordStore();
+  hostname.value = selectedRecord.value?.hostname ?? "";
+  ipAddress.value = selectedRecord.value?.ipAddress ?? "";
+}
 
+async function onDeleteSubmit(fse: FormSubmitEvent) {
+  console.log(fse);
+  toast.add({
+    severity: "success",
+    summary: "Validation successful",
+    life: 2000
+  });
+  try {
+    await deleteRecord(hostname.value);
+    toast.add({
+      severity: "success",
+      summary: "Deletion successful",
+      life: 2000
+    });
+  } catch (e: unknown) {
+    if (e instanceof AxiosError) {
+      generateErrorToast(`HTTP ${e.code}: ${e.message}`);
+    } else if (e instanceof Error) {
+      generateErrorToast(e.message);
+    } else {
+      generateErrorToast("Unknown error!");
+      deleteRecordVisible.value = false;
+    }
+  } finally {
+    refreshTable();
+  }
+  deleteRecordVisible.value = false;
+}
+
+function refreshTable() {
+  return;
 }
 
 function generateErrorToast(message: string) {
   toast.add({ severity: "error", summary: message });
 }
-
 </script>
 <template>
   <Toast
@@ -99,7 +148,7 @@ function generateErrorToast(message: string) {
   />
   <Button
     label="Новая запись"
-    @click="newRecordVisible = true">
+    @click="onAddRecordClick">
     <slot name="icon">
       <img src="@/assets/add.svg" alt="plus">
       Новая запись
@@ -122,12 +171,11 @@ function generateErrorToast(message: string) {
     </slot>
   </Button>
   <DnsRecordDialog
-    header="Добавить A-запись в DNS"
+    header="Добавить A-запись"
     v-model:visible="newRecordVisible"
     v-model:hostname="hostname"
     v-model:ip-address="ipAddress"
     v-model:add-ptr="addPtr"
-    :initial-values
     @submit="onAddSubmit"
   />
   <DnsRecordDialog
@@ -136,7 +184,14 @@ function generateErrorToast(message: string) {
     v-model:hostname="hostname"
     v-model:ip-address="ipAddress"
     v-model:add-ptr="addPtr"
-    :initial-values
     @submit="onEditSubmit"
+  />
+  <DnsRecordDialog
+    header="Удалить A-запись"
+    v-model:visible="deleteRecordVisible"
+    v-model:hostname="hostname"
+    v-model:ip-address="ipAddress"
+    v-model:add-ptr="addPtr"
+    @submit="onDeleteSubmit"
   />
 </template>
