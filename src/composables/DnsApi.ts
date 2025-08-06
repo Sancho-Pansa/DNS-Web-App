@@ -1,43 +1,43 @@
-import axios, { AxiosError } from "axios"
+import axios, { AxiosError } from "axios";
 
-type RecordType = "A" | "AAAA" | "CNAME" | "MX" | "NS" | "PTR" | "SOA" | "SRV" | "TXT"
+type RecordType = "A" | "AAAA" | "CNAME" | "MX" | "NS" | "PTR" | "SOA" | "SRV" | "TXT";
 
 export interface DnsRecord {
-  hostname: string
-  type: RecordType
+  hostname: string,
+  type: RecordType,
   ipAddress?: string
 }
 interface ReceivedRecord {
-  HostName: string
-  RecordType: string
+  HostName: string,
+  RecordType: string,
   RecordData: string
 }
 
 export default function useDnsApi() {
-  const API_ADDRESS: string = import.meta.env.VITE_API_BASE_URL
+  const API_ADDRESS: string = import.meta.env.VITE_API_BASE_URL;
 
-  const HTTP_UNPROCESSABLE_CONTENT = 422
+  const HTTP_UNPROCESSABLE_CONTENT = 422;
 
   const axiosInstance = axios.create({
     baseURL: API_ADDRESS
-  })
+  });
 
   const getRecords = async function(...recordTypes: RecordType[]) {
     try {
-      const response = await axiosInstance.get("/dns/list")
+      const response = await axiosInstance.get("/dns/list");
       const recordData: DnsRecord[] = (response.data as ReceivedRecord[]).map(
         (r: ReceivedRecord): DnsRecord => ({
           hostname: r.HostName,
           type: r.RecordType as RecordType,
           ipAddress: r.RecordData
         })
-      )
+      );
 
-      return recordData.filter((r) => recordTypes.includes(r.type))
+      return recordData.filter(r => recordTypes.includes(r.type));
     } catch (e: unknown) {
-      throw e
+      throw e;
     }
-  }
+  };
 
   const addRecord = async function(hostname: string, ipAddress: string, addPtr: boolean = true) {
     try {
@@ -45,24 +45,24 @@ export default function useDnsApi() {
         Name: hostname,
         IpAddress: ipAddress,
         addPtr
-      })
+      });
     } catch (e: unknown) {
       if (e instanceof AxiosError) {
         if (e.status === HTTP_UNPROCESSABLE_CONTENT) {
-          throw new Error("Hostname already exists!")
+          throw new Error("Hostname already exists!");
         }
       }
-      throw e
+      throw e;
     }
-  }
+  };
 
   function deleteRecord(hostname: string) {
     try {
       axiosInstance.post("/dns/delete-record", {
         Name: hostname
       });
-    } catch(e: unknown) {
-      if(e instanceof AxiosError) {
+    } catch (e: unknown) {
+      if (e instanceof AxiosError) {
         throw new Error(e.message);
       }
       throw e;
@@ -73,5 +73,5 @@ export default function useDnsApi() {
     getRecords,
     addRecord,
     deleteRecord
-  }
+  };
 }

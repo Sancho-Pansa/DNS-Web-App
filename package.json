@@ -11,7 +11,7 @@
     "test:unit": "vitest",
     "build-only": "vite build",
     "type-check": "vue-tsc --build",
-    "format": "prettier --write src/"
+    "eslint-fix": "eslint --fix ."
   },
   "dependencies": {
     "@primeuix/themes": "^1.2.1",
