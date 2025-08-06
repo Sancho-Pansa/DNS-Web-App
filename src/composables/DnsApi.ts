@@ -14,7 +14,7 @@ interface ReceivedRecord {
 }
 
 export default function useDnsApi() {
-  const API_ADDRESS: string = import.meta.env.VITE_API_BASE_URL;
+  const API_ADDRESS: string = import.meta.env.VITE_API_SECURE_URL;
 
   const HTTP_UNPROCESSABLE_CONTENT = 422;
 
