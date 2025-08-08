@@ -108,22 +108,24 @@ function generateErrorToast(message: string) {
     position="bottom-center"
     severity="error"
   />
-  <Button
-    label="Новая запись"
-    @click="onAddRecordClick">
-    <slot name="icon">
-      <img src="@/assets/add.svg" alt="plus">
-      Новая запись
-    </slot>
-  </Button>
-  <Button
-    label="Удалить запись"
-    @click="onDeleteClick">
-    <slot name="icon">
-      <img src="@/assets/delete.svg" alt="delete">
-      Удалить запись
-    </slot>
-  </Button>
+  <nav class="flex gap-1">
+    <Button
+      label="Новая запись"
+      @click="onAddRecordClick">
+      <slot name="icon">
+        <img src="@/assets/add.svg" alt="plus">
+        Новая запись
+      </slot>
+    </Button>
+    <Button
+      label="Удалить запись"
+      @click="onDeleteClick">
+      <slot name="icon">
+        <img src="@/assets/delete.svg" alt="delete">
+        Удалить запись
+      </slot>
+    </Button>
+  </nav>
   <DnsRecordDialog
     header="Добавить A-запись"
     v-model:visible="newRecordVisible"
