@@ -4,6 +4,8 @@ import Column from "primevue/column";
 import useDnsApi, { type DnsRecord } from "@/composables/useDnsApi";
 import useRecordStore from "@/composables/useRecordStore";
 import { onMounted, ref, watch, type Ref } from "vue";
+import { AxiosError } from "axios";
+import { useToast } from "primevue";
 
 const recordsList: Ref<DnsRecord[]> = ref([]);
 const selectedRow: Ref<DnsRecord | null> = ref(null);
@@ -11,6 +13,7 @@ const isLoading = ref(true);
 const DEFAULT_ZONE = ref(import.meta.env.VITE_DEFAULT_ZONE);
 
 const { selectedRecord } = useRecordStore();
+const toast = useToast();
 
 watch(selectedRow, () => {
   selectedRecord.value = selectedRow.value;
@@ -18,16 +21,35 @@ watch(selectedRow, () => {
 
 onMounted(async () => {
   recordsList.value = await refreshTable();
-  isLoading.value = false;
 });
 
 async function refreshTable() {
-  const { getRecords } = useDnsApi();
-  return getRecords("A", "AAAA", "CNAME", "MX", "NS", "PTR", "SOA", "SRV", "TXT");
+  try {
+    const { getRecords } = useDnsApi();
+    return getRecords("A", "AAAA", "CNAME", "MX", "NS", "PTR", "SOA", "SRV", "TXT");
+  } catch (e: unknown) {
+    if (e instanceof AxiosError) {
+      toast.add({
+        summary: `HTTP ${e.code}: ${e.message}`,
+        severity: "error",
+        life: 3000
+      });
+    } else {
+      toast.add({
+        summary: "Unknown Error",
+        severity: "error",
+        life: 3000
+      });
+    }
+  } finally {
+    isLoading.value = false;
+  }
+  return [];
 }
 </script>
 
 <template>
+  <Toast position="center" />
   <DataTable
     v-model:selection="selectedRow"
     selection-mode="single"
