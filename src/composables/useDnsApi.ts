@@ -24,7 +24,11 @@ export default function useDnsApi() {
 
   const getRecords = async function(...recordTypes: RecordType[]) {
     try {
-      const response = await axiosInstance.get("/dns/list");
+      const response = await axiosInstance.get("/dns/list", {
+        headers: {
+          "Authorization": `Bearer ${import.meta.env.VITE_BEARER}`
+        }
+      });
       const recordData: DnsRecord[] = (response.data as ReceivedRecord[]).map(
         (r: ReceivedRecord): DnsRecord => ({
           hostname: r.HostName,
