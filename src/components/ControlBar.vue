@@ -2,7 +2,7 @@
 import { ref } from "vue";
 import { Button, Toast, useToast } from "primevue";
 import { type FormSubmitEvent } from "@primevue/forms";
-import useDnsApi from "@/composables/DnsApi";
+import useDnsApi from "@/composables/useDnsApi";
 import useRecordStore from "@/composables/useRecordStore";
 import { AxiosError } from "axios";
 import DnsRecordDialog from "@/components/DnsRecordDialog.vue";

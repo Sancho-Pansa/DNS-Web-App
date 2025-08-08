@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
-import useDnsApi, { type DnsRecord } from "@/composables/DnsApi";
+import useDnsApi, { type DnsRecord } from "@/composables/useDnsApi";
 import useRecordStore from "@/composables/useRecordStore";
 import { onMounted, ref, watch, type Ref } from "vue";
 

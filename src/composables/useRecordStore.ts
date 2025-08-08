@@ -1,5 +1,5 @@
 import { ref, type Ref } from "vue";
-import type { DnsRecord } from "./DnsApi";
+import type { DnsRecord } from "./useDnsApi";
 
 const selectedRecord: Ref<DnsRecord | null> = ref(null);
 

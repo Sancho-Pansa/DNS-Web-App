@@ -1,5 +1,5 @@
 import { describe, expect, test, vi } from "vitest";
-import useDnsApi from "../DnsApi";
+import useDnsApi from "../useDnsApi";
 import { type AxiosInstance } from "axios";
 
 vi.mock("axios", async () => {
