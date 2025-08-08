@@ -14,7 +14,6 @@ const DEFAULT_VALUES = {
 };
 
 const newRecordVisible = ref(false);
-const editRecordVisible = ref(false);
 const deleteRecordVisible = ref(false);
 const hostname = ref("");
 const ipAddress = ref("");
@@ -57,43 +56,6 @@ async function onAddSubmit(fse: FormSubmitEvent) {
       refreshTable();
     }
     newRecordVisible.value = false;
-  }
-}
-
-function onEditClick() {
-  editRecordVisible.value = true;
-  const { selectedRecord } = useRecordStore();
-  hostname.value = selectedRecord.value?.hostname ?? "";
-  ipAddress.value = selectedRecord.value?.ipAddress ?? "";
-}
-
-async function onEditSubmit(fse: FormSubmitEvent) {
-  if (fse.valid) {
-    toast.add({
-      severity: "success",
-      summary: "Validation successful",
-      life: 2000
-    });
-    try {
-      await addRecord(hostname.value, ipAddress.value, addPtr.value);
-      toast.add({
-        severity: "success",
-        summary: "Record added",
-        life: 2000
-      });
-    } catch (e: unknown) {
-      if (e instanceof AxiosError) {
-        generateErrorToast(`HTTP ${e.code}: ${e.message}`);
-      } else if (e instanceof Error) {
-        generateErrorToast(e.message);
-      } else {
-        generateErrorToast("Unknown error!");
-        deleteRecordVisible.value = false;
-      }
-    } finally {
-      refreshTable();
-    }
-    editRecordVisible.value = false;
   }
 }
 
@@ -155,14 +117,6 @@ function generateErrorToast(message: string) {
     </slot>
   </Button>
   <Button
-    label="Изменить запись"
-    @click="onEditClick">
-    <slot name="icon">
-      <img src="@/assets/edit.svg" alt="edit">
-      Изменить запись
-    </slot>
-  </Button>
-  <Button
     label="Удалить запись"
     @click="onDeleteClick">
     <slot name="icon">
@@ -177,14 +131,6 @@ function generateErrorToast(message: string) {
     v-model:ip-address="ipAddress"
     v-model:add-ptr="addPtr"
     @submit="onAddSubmit"
-  />
-  <DnsRecordDialog
-    header="Изменить A-запись в DNS"
-    v-model:visible="editRecordVisible"
-    v-model:hostname="hostname"
-    v-model:ip-address="ipAddress"
-    v-model:add-ptr="addPtr"
-    @submit="onEditSubmit"
   />
   <DnsRecordDialog
     header="Удалить A-запись"
